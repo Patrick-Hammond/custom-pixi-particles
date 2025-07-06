@@ -115,9 +115,9 @@ export default class Renderer extends Container {
         var _a;
         if (this._paused)
             return;
-        (_a = this.emitter) === null || _a === void 0 ? void 0 : _a.update(deltaTime.deltaMS);
+        (_a = this.emitter) === null || _a === void 0 ? void 0 : _a.update(deltaTime.deltaTime);
         if (this.turbulenceEmitter) {
-            this.turbulenceEmitter.update(deltaTime.deltaMS);
+            this.turbulenceEmitter.update(deltaTime.deltaTime);
         }
     }
     /**
