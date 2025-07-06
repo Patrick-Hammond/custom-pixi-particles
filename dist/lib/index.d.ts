@@ -1,0 +1,20 @@
+import * as controller from './emission';
+import * as behaviour from './behaviour';
+import * as parser from './parser';
+import Particle from './Particle';
+import ParticlePool from './ParticlePool';
+import { Duration, Emitter } from './emitter';
+import { Color, Point, Random } from './util';
+declare const cpp: {
+    Particle: typeof Particle;
+    ParticlePool: typeof ParticlePool;
+    parser: typeof parser;
+    controller: typeof controller;
+    behaviour: typeof behaviour;
+    Color: typeof Color;
+    Point: typeof Point;
+    Random: typeof Random;
+    Duration: typeof Duration;
+    Emitter: typeof Emitter;
+};
+export default cpp;

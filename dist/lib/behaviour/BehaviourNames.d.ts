@@ -1,0 +1,23 @@
+declare const behaviourNames: {
+    ANGULAR_BEHAVIOUR: string;
+    LIFE_BEHAVIOUR: string;
+    COLOR_BEHAVIOUR: string;
+    POSITION_BEHAVIOUR: string;
+    SIZE_BEHAVIOUR: string;
+    EMIT_DIRECTION: string;
+    ROTATION_BEHAVIOUR: string;
+    TURBULENCE_BEHAVIOUR: string;
+    COLLISION_BEHAVIOUR: string;
+    ATTRACTION_REPULSION_BEHAVIOUR: string;
+    NOISE_BASED_MOTION_BEHAVIOUR: string;
+    FORCE_FIELDS_BEHAVIOUR: string;
+    SPAWN_BEHAVIOUR: string;
+    TIMELINE_BEHAVIOUR: string;
+    GROUPING_BEHAVIOUR: string;
+    SOUND_REACTIVE_BEHAVIOUR: string;
+    LIGHT_EFFECT_BEHAVIOUR: string;
+    STRETCH_BEHAVIOUR: string;
+    TEMPERATURE_BEHAVIOUR: string;
+    MOVE_TO_POINT_BEHAVIOUR: string;
+};
+export default behaviourNames;
