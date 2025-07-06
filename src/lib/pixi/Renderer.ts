@@ -151,9 +151,9 @@ export default class Renderer extends Container {
   _updateTransform(deltaTime: any) {
     if (this._paused) return
 
-    this.emitter?.update(deltaTime.deltaMS)
+    this.emitter?.update(deltaTime.deltaTime)
     if (this.turbulenceEmitter) {
-      this.turbulenceEmitter.update(deltaTime.deltaMS)
+      this.turbulenceEmitter.update(deltaTime.deltaTime)
     }
   }
 
