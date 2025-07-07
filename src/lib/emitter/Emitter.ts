@@ -43,7 +43,7 @@ export default class Emitter extends eventemitter3 {
    * Triggers the COMPLETE event when the duration is elapsed and the list is empty.
    * @param {number} deltaTime - Time elapsed since the last update
    */
-  async update(deltaTime: number) {
+  update(deltaTime: number) {
     if (!this._play) return
 
     this.behaviours.update(deltaTime)
@@ -88,9 +88,12 @@ export default class Emitter extends eventemitter3 {
    * @param {number} deltaTime - The amount of time that has passed since the last update
    */
   updateParticles(deltaTime: number) {
-    this.list.forEach((particle: Particle) => {
-      this.updateParticle(particle, deltaTime)
-    })
+    let current = this.list.first as Particle | null
+    while (current) {
+      const next = current.next as Particle | null
+      this.updateParticle(current, deltaTime)
+      current = next
+    }
   }
 
   /**
