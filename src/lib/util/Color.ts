@@ -20,18 +20,12 @@ export default class Color {
   private _g: number
   private _b: number
   private _alpha: number
-  private _hex: number = 0
-
-  private updateHex() {
-    this._hex = (this._r << 16) | (this._g << 8) | this._b
-  }
 
   constructor(r?: number, g?: number, b?: number, alpha?: number) {
     this.r = r || 0
     this.g = g || 0
     this.b = b || 0
     this.alpha = alpha || 1
-    this.updateHex()
   }
 
   /**
@@ -53,7 +47,6 @@ export default class Color {
   set r(value: number) {
     const newValue = value === undefined ? 0 : value
     this._r = newValue
-    this.updateHex()
   }
 
   /**
@@ -75,7 +68,6 @@ export default class Color {
   set g(value: number) {
     const newValue = value === undefined ? 0 : value
     this._g = newValue
-    this.updateHex()
   }
 
   /**
@@ -97,7 +89,6 @@ export default class Color {
   set b(value: number) {
     const newValue = value === undefined ? 0 : value
     this._b = newValue
-    this.updateHex()
   }
 
   /**
@@ -128,7 +119,10 @@ export default class Color {
    * @returns {number} The hex value of the Color object
    */
   get hex() {
-    return this._hex
+    let hex = this.r << 16
+    hex = hex | (this.g << 8)
+    hex = hex | this.b
+    return hex
   }
 
   /**
@@ -141,7 +135,6 @@ export default class Color {
     this.r = (value & 0xff0000) >> 16
     this.g = (value & 0xff00) >> 8
     this.b = value & 0xff
-    this._hex = value
   }
 
   /**
@@ -155,7 +148,6 @@ export default class Color {
     this.g = color.g
     this.b = color.b
     this.alpha = color.alpha
-    this.updateHex()
   }
 
   /**
@@ -169,7 +161,6 @@ export default class Color {
     this.g = data._g
     this.b = data._b
     this.alpha = data._alpha
-    this.updateHex()
   }
 
   /**
@@ -183,7 +174,6 @@ export default class Color {
     this.g += color.g
     this.b += color.b
     this.alpha += color.alpha
-    this.updateHex()
   }
 
   /**
@@ -200,7 +190,6 @@ export default class Color {
     this.g = g || 0
     this.b = b || 0
     this.alpha = alpha
-    this.updateHex()
   }
 }
 

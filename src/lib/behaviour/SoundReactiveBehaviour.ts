@@ -76,10 +76,7 @@ export default class SoundReactiveBehaviour extends Behaviour {
   getAmplitude(): number {
     if (!this.frequencyData) return 0
 
-    let sum = 0
-    for (let i = 0; i < this.frequencyData.length; i++) {
-      sum += this.frequencyData[i]
-    }
+    const sum = this.frequencyData.reduce((a, b) => a + b, 0)
     return sum / this.frequencyData.length
   }
 

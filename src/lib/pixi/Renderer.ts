@@ -33,7 +33,6 @@ export default class Renderer extends ParticleContainer {
   private _model: Model = new Model()
   private _ticker: Ticker | undefined
   private _visibilitychangeBinding: any
-  private frameCache: { [prefix: string]: Texture[] } = {}
 
   /**
    * Creates an instance of Renderer.
@@ -278,7 +277,6 @@ export default class Renderer extends ParticleContainer {
    */
   setTextures(textures: string[]) {
     this.textures = textures
-    this.frameCache = {}
     this.updateTexture()
   }
 
@@ -369,10 +367,6 @@ export default class Renderer extends ParticleContainer {
   }
 
   private createFrameAnimationByName(prefix: string, imageFileExtension: string = 'png'): Texture[] {
-    if (this.frameCache[prefix]) {
-      return this.frameCache[prefix]
-    }
-
     const zeroPad = this.zeroPad
     const textures: Texture[] = []
     let frame: string = ''
@@ -420,7 +414,6 @@ export default class Renderer extends ParticleContainer {
         texture = null
       }
     } while (texture)
-    this.frameCache[prefix] = textures
     return textures
   }
 
