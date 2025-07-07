@@ -7,7 +7,7 @@ import List from '../util/List'
 import ParticlePool from '../ParticlePool'
 import { ICustomPixiParticlesSettings } from '../customPixiParticlesSettingsInterface'
 import { EmitterParser } from '../parser'
-import { AnimatedSprite, Loader, ParticleContainer, Sprite, Texture, Ticker } from 'pixi.js-legacy'
+import { AnimatedSprite, Assets, Container, Sprite, Texture, Ticker } from 'pixi.js'
 import Model from '../Model'
 
 /**
@@ -15,7 +15,8 @@ import Model from '../Model'
  *
  * @class Renderer
  */
-export default class Renderer extends ParticleContainer {
+export default class Renderer extends Container {
+  // @ts-ignore
   blendMode: any
   emitter: Emitter
   turbulenceEmitter: Emitter
@@ -58,13 +59,7 @@ export default class Renderer extends ParticleContainer {
       tickerSpeed,
     } = settings
 
-    super(maxParticles, {
-      vertices,
-      position,
-      rotation,
-      uvs,
-      tint,
-    })
+    super()
 
     this.config = emitterConfig
     this.textures = textures
@@ -114,9 +109,9 @@ export default class Renderer extends ParticleContainer {
     document.addEventListener('visibilitychange', this._visibilitychangeBinding)
 
     const ticker = new Ticker()
-    ticker.maxFPS = maxFPS
-    ticker.minFPS = minFPS
-    ticker.speed = tickerSpeed
+    ticker.maxFPS = maxFPS || 60
+    ticker.minFPS = minFPS || 60
+    ticker.speed = tickerSpeed || 0.02
     ticker.stop()
     // @ts-ignore
     ticker.add(this._updateTransform, this)
@@ -154,12 +149,12 @@ export default class Renderer extends ParticleContainer {
   /**
    * Updates the transform of the ParticleContainer and updates the emitters.
    */
-  _updateTransform(deltaTime: number) {
+  _updateTransform(deltaTime: any) {
     if (this._paused) return
 
-    this.emitter?.update(deltaTime)
+    this.emitter?.update(deltaTime.deltaTime)
     if (this.turbulenceEmitter) {
-      this.turbulenceEmitter.update(deltaTime)
+      this.turbulenceEmitter.update(deltaTime.deltaTime)
     }
   }
 
@@ -170,10 +165,10 @@ export default class Renderer extends ParticleContainer {
    */
   updateTexture() {
     for (let i = 0; i < this.unusedSprites.length; ++i) {
-      this.unusedSprites[i].texture = Texture.from(this.getRandomTexture())
+      this.unusedSprites[i].texture = Assets.get(this.getRandomTexture())
     }
 
-    for (let i = 0; i < this.children.length; ++i) {
+    for (let i = 0; i < this.children?.length; ++i) {
       // @ts-ignore
       this.children[i].texture = Texture.from(this.getRandomTexture())
     }
@@ -345,7 +340,7 @@ export default class Renderer extends ParticleContainer {
     if (this.unusedSprites.length > 0) {
       const sprite = this.unusedSprites.pop()
       if (this.finishingTextureNames && this.finishingTextureNames.length) {
-        sprite.texture = Texture.from(this.getRandomTexture())
+        sprite.texture = Assets.get(this.getRandomTexture())
       }
       return sprite
     }
@@ -378,15 +373,7 @@ export default class Renderer extends ParticleContainer {
     let frame: string = ''
     let indexFrame: number = this.indexToStart
     let padding: number = 0
-    let texture: Texture | null
-    const sheets = []
-    const resources = Loader.shared.resources
-    for (const key in resources) {
-      if (resources[key].extension === 'json') {
-        // @ts-ignore
-        sheets.push(resources[key].spritesheet)
-      }
-    }
+    let texture: any
 
     do {
       frame = indexFrame.toString()
@@ -394,27 +381,15 @@ export default class Renderer extends ParticleContainer {
       if (padding > 0) {
         frame = '0'.repeat(padding) + frame
       }
-
       try {
-        let found = false
-        for (const sheet of sheets) {
-          if (sheet && sheet.textures[`${prefix}${frame}.${imageFileExtension}`]) {
-            found = true
-          }
-        }
-        if (found) {
-          texture = Texture.from(`${prefix}${frame}.${imageFileExtension}`)
+        const fileName = `${prefix}${frame}.${imageFileExtension}`
+        const file = Assets.get(fileName)
+        if (file) {
+          texture = file
           textures.push(texture)
           indexFrame += 1
         } else {
           texture = null
-          for (const key in resources) {
-            if (key === `${prefix}${frame}.${imageFileExtension}`) {
-              texture = Texture.from(`${prefix}${frame}.${imageFileExtension}`)
-              textures.push(texture)
-              indexFrame += 1
-            }
-          }
         }
       } catch (e) {
         texture = null
