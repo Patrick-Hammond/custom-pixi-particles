@@ -111,8 +111,8 @@ export default class EmitterBehaviours {
    * @param {Model} model The model
    */
   apply = (particle: Particle, deltaTime: number, model: Model) => {
-    model.updateCamera(deltaTime)
     for (let i = 0; i < this.behaviours.length; ++i) {
+      model.updateCamera(deltaTime)
       this.behaviours[i].apply(particle, deltaTime, model)
     }
   }

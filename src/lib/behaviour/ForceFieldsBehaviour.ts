@@ -16,7 +16,6 @@ export default class ForceFieldsBehaviour extends Behaviour {
   fields: {
     position: Point
     radius: number
-    radiusSquared?: number
     strength: number
     type: 'wind' | 'gravity' | 'turbulence'
     direction?: Point // For wind
@@ -39,15 +38,10 @@ export default class ForceFieldsBehaviour extends Behaviour {
     if (!this.enabled || particle.skipPositionBehaviour) return
 
     this.fields.forEach((field) => {
-      if (!field.radiusSquared) {
-        field.radiusSquared = field.radius * field.radius
-      }
-      const dx = particle.x - field.position.x
-      const dy = particle.y - field.position.y
-      const distSq = dx * dx + dy * dy
+      const distance = Math.sqrt((particle.x - field.position.x) ** 2 + (particle.y - field.position.y) ** 2)
 
-      if (distSq <= field.radiusSquared) {
-        const distance = Math.sqrt(distSq)
+      // Check if the particle is within the field's radius
+      if (distance <= field.radius) {
         const influence = (field.radius - distance) / field.radius // Influence factor (closer = stronger)
 
         switch (field.type) {
@@ -59,9 +53,9 @@ export default class ForceFieldsBehaviour extends Behaviour {
             break
 
           case 'gravity':
-            const dxg = field.position.x - particle.x
-            const dyg = field.position.y - particle.y
-            const angle = Math.atan2(dyg, dxg)
+            const dx = field.position.x - particle.x
+            const dy = field.position.y - particle.y
+            const angle = Math.atan2(dy, dx)
             particle.movement.x += Math.cos(angle) * field.strength * influence * deltaTime
             particle.movement.y += Math.sin(angle) * field.strength * influence * deltaTime
             break
