@@ -26,13 +26,10 @@ jobs:
         run: npm run build
 
       - name: Commit and push dist folder
+        if: github.event_name == 'push'
         run: |
           git config --local user.email "action@github.com"
           git config --local user.name "GitHub Action"
           git add dist/
           git diff --staged --quiet || git commit -m "Auto-update dist folder [skip ci]"
           git push
-
-      # Optional: Run tests if you have them
-      # - name: Test
-      #   run: npm test
