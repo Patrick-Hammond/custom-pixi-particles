@@ -1,0 +1,1 @@
+{"version":3,"file":"maths.js","sourceRoot":"","sources":["../../../../src/lib/util/maths.ts"],"names":[],"mappings":"AAAA,MAAM,kBAAkB,GAAG,IAAI,CAAC,EAAE,GAAG,KAAK,CAAA;AAE1C,eAAe;IACb,OAAO,EAAE,qBAAqB;IAE9B;;;;OAIG;IACH,gBAAgB,EAAE,CAAC,OAAe,EAAE,EAAE;QACpC,OAAO,OAAO,GAAG,kBAAkB,CAAA;IACrC,CAAC;CACF,CAAA"}
