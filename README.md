@@ -63,6 +63,15 @@ container.addChild(particles)
 particles.play()
 ```
 
+### Benchmarking
+Run the included performance benchmarks with:
+
+```bash
+npm run benchmark
+```
+
+This measures improvements like optimized particle updates and color caching.
+
 ---
 
 ## 📖 API Reference
