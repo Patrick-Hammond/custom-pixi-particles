@@ -1,5 +1,5 @@
-import List from '../src/lib/util/List'
-import Color from '../src/lib/util/Color'
+import List from '../src/lib/util/List.js'
+import Color from '../src/lib/util/Color.js'
 
 function benchEmitterUpdateParticles() {
   const list = new List()

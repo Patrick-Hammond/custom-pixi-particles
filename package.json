@@ -40,7 +40,7 @@
   },
   "scripts": {
     "build": "npm run clean-dist && tsc",
-    "clean-dist": "rimraf dist/*",
+    "clean-dist": "rimraf dist",
     "lint": "tslint 'src/**/*.ts'",
     "lint:fix": "tslint --fix 'src/**/*.ts'",
     "benchmark": "node dist/benchmark/index.js"
