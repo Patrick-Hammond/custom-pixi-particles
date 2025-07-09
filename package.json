@@ -31,8 +31,9 @@
     "particles"
   ],
   "license": "GNU",
-  "main": "dist/index.js",
+  "main": "dist/src/index.js",
   "name": "custom-pixi-particles",
+  "type": "module",
   "repository": {
     "type": "git",
     "url": "git@github.com:lukasz-okuniewicz/custom-pixi-particles.git"
@@ -42,7 +43,7 @@
     "clean-dist": "rimraf dist/*",
     "lint": "tslint 'src/**/*.ts'",
     "lint:fix": "tslint --fix 'src/**/*.ts'",
-    "benchmark": "ts-node benchmark/index.ts"
+    "benchmark": "node dist/benchmark/index.js"
   },
   "version": "8.3.0"
 }
