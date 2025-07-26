@@ -5,24 +5,14 @@ import { Random } from '../util';
  * @extends AbstractEmission
  */
 export default class RandomEmission extends AbstractEmission {
-    constructor() {
-        super(...arguments);
-        /**
-         * Maximum number of particles
-         */
-        this._maxParticles = 0;
-        /**
-         * Emission rate
-         */
-        this._emissionRate = 0;
-        /**
-         * Gets the name of the emission type
-         * @returns {string} Emission type
-         */
-        this.getName = () => {
-            return EmissionTypes.RANDOM;
-        };
-    }
+    /**
+     * Maximum number of particles
+     */
+    _maxParticles = 0;
+    /**
+     * Emission rate
+     */
+    _emissionRate = 0;
     /**
      * Calculates how many particles to emit
      * @param {number} deltaTime - how much time is passed
@@ -62,5 +52,12 @@ export default class RandomEmission extends AbstractEmission {
     set maxParticles(value) {
         this._maxParticles = Math.max(0, value);
     }
+    /**
+     * Gets the name of the emission type
+     * @returns {string} Emission type
+     */
+    getName = () => {
+        return EmissionTypes.RANDOM;
+    };
 }
 //# sourceMappingURL=RandomEmission.js.map

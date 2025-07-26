@@ -4,20 +4,18 @@
  * @class List
  */
 export default class List {
-    constructor() {
-        /**
-         * Stores the first item of the list
-         *
-         * @member {any}
-         */
-        this.first = null;
-        /**
-         * Stores the length of the list
-         *
-         * @member {number}
-         */
-        this.length = 0;
-    }
+    /**
+     * Stores the first item of the list
+     *
+     * @member {any}
+     */
+    first = null;
+    /**
+     * Stores the length of the list
+     *
+     * @member {number}
+     */
+    length = 0;
     /**
      * Returns true if the list is empty
      *

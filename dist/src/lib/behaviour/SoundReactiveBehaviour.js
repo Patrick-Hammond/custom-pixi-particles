@@ -1,26 +1,23 @@
 import { Behaviour, BehaviourNames } from './index';
 import { Color, Point } from '../util';
 export default class SoundReactiveBehaviour extends Behaviour {
-    constructor() {
-        super(...arguments);
-        this.enabled = true;
-        this.priority = 0;
-        this.isPlaying = false;
-        this.useColor = true;
-        this.useSize = true;
-        this.useVelocity = true;
-        this.useRotation = true; // New property for rotation
-        this.useRandomColor = true; // New property for random colors
-        this.beatColor = new Color(255, 0, 0, 1); // Default beat color (red with full alpha)
-        this.audioContext = null; // Audio context for analysis
-        this.analyser = null; // Audio analyser node
-        this.frequencyData = null; // Frequency data array
-        this.amplitudeFactor = 0.1; // Scale factor for amplitude effects
-        this.frequencyFactor = 1; // Scale factor for frequency effects
-        this.rotationFactor = 0.05; // Scale factor for rotation effects
-        this.beatSensitivity = 1; // Sensitivity to detect beats
-        this.velocityFactor = new Point(1, 1); // Sensitivity to detect beats
-    }
+    enabled = true;
+    priority = 0;
+    isPlaying = false;
+    useColor = true;
+    useSize = true;
+    useVelocity = true;
+    useRotation = true; // New property for rotation
+    useRandomColor = true; // New property for random colors
+    beatColor = new Color(255, 0, 0, 1); // Default beat color (red with full alpha)
+    audioContext = null; // Audio context for analysis
+    analyser = null; // Audio analyser node
+    frequencyData = null; // Frequency data array
+    amplitudeFactor = 0.1; // Scale factor for amplitude effects
+    frequencyFactor = 1; // Scale factor for frequency effects
+    rotationFactor = 0.05; // Scale factor for rotation effects
+    beatSensitivity = 1; // Sensitivity to detect beats
+    velocityFactor = new Point(1, 1); // Sensitivity to detect beats
     init() {
         //
     }
@@ -79,7 +76,6 @@ export default class SoundReactiveBehaviour extends Behaviour {
      * Finds the dominant frequency (frequency with the highest amplitude).
      */
     getDominantFrequency() {
-        var _a, _b, _c, _d;
         if (!this.frequencyData)
             return 0;
         let maxAmplitude = 0;
@@ -90,7 +86,7 @@ export default class SoundReactiveBehaviour extends Behaviour {
                 dominantIndex = i;
             }
         }
-        return (dominantIndex * ((_b = (_a = this.analyser) === null || _a === void 0 ? void 0 : _a.context.sampleRate) !== null && _b !== void 0 ? _b : 0)) / ((_d = (_c = this.analyser) === null || _c === void 0 ? void 0 : _c.fftSize) !== null && _d !== void 0 ? _d : 1);
+        return (dominantIndex * (this.analyser?.context.sampleRate ?? 0)) / (this.analyser?.fftSize ?? 1);
     }
     /**
      * Detects a beat based on amplitude and sensitivity.

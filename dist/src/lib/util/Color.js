@@ -13,66 +13,15 @@
  * @param {number} [alpha=1] - The alpha component of the color
  */
 export default class Color {
+    _r;
+    _g;
+    _b;
+    _alpha;
+    _hex = 0;
     updateHex() {
         this._hex = (this._r << 16) | (this._g << 8) | this._b;
     }
     constructor(r, g, b, alpha) {
-        this._hex = 0;
-        /**
-         * @function copyFrom
-         * @memberof Color
-         * @description Copies the values of an IColor object to the Color object
-         * @param {IColor} color - The IColor object to copy from
-         */
-        this.copyFrom = (color) => {
-            this.r = color.r;
-            this.g = color.g;
-            this.b = color.b;
-            this.alpha = color.alpha;
-            this.updateHex();
-        };
-        /**
-         * @function copyFromRawData
-         * @memberof Color
-         * @description Copies the values of a raw data object to the Color object
-         * @param {object} data - The raw data object to copy from
-         */
-        this.copyFromRawData = (data) => {
-            this.r = data._r;
-            this.g = data._g;
-            this.b = data._b;
-            this.alpha = data._alpha;
-            this.updateHex();
-        };
-        /**
-         * @function add
-         * @memberof Color
-         * @description Adds the values of a color object to the Color object
-         * @param {IColor} color - The IColor object to add
-         */
-        this.add = (color) => {
-            this.r += color.r;
-            this.g += color.g;
-            this.b += color.b;
-            this.alpha += color.alpha;
-            this.updateHex();
-        };
-        /**
-         * @function set
-         * @memberof Color
-         * @description Sets the values of the color object
-         * @param {number} r - The red component of the color
-         * @param {number} g - The green component of the color
-         * @param {number} b - The blue component of the color
-         * @param {number} alpha - The alpha component of the color
-         */
-        this.set = (r, g, b, alpha) => {
-            this.r = r || 0;
-            this.g = g || 0;
-            this.b = b || 0;
-            this.alpha = alpha;
-            this.updateHex();
-        };
         this.r = r || 0;
         this.g = g || 0;
         this.b = b || 0;
@@ -179,5 +128,60 @@ export default class Color {
         this.b = value & 0xff;
         this._hex = value;
     }
+    /**
+     * @function copyFrom
+     * @memberof Color
+     * @description Copies the values of an IColor object to the Color object
+     * @param {IColor} color - The IColor object to copy from
+     */
+    copyFrom = (color) => {
+        this.r = color.r;
+        this.g = color.g;
+        this.b = color.b;
+        this.alpha = color.alpha;
+        this.updateHex();
+    };
+    /**
+     * @function copyFromRawData
+     * @memberof Color
+     * @description Copies the values of a raw data object to the Color object
+     * @param {object} data - The raw data object to copy from
+     */
+    copyFromRawData = (data) => {
+        this.r = data._r;
+        this.g = data._g;
+        this.b = data._b;
+        this.alpha = data._alpha;
+        this.updateHex();
+    };
+    /**
+     * @function add
+     * @memberof Color
+     * @description Adds the values of a color object to the Color object
+     * @param {IColor} color - The IColor object to add
+     */
+    add = (color) => {
+        this.r += color.r;
+        this.g += color.g;
+        this.b += color.b;
+        this.alpha += color.alpha;
+        this.updateHex();
+    };
+    /**
+     * @function set
+     * @memberof Color
+     * @description Sets the values of the color object
+     * @param {number} r - The red component of the color
+     * @param {number} g - The green component of the color
+     * @param {number} b - The blue component of the color
+     * @param {number} alpha - The alpha component of the color
+     */
+    set = (r, g, b, alpha) => {
+        this.r = r || 0;
+        this.g = g || 0;
+        this.b = b || 0;
+        this.alpha = alpha;
+        this.updateHex();
+    };
 }
 //# sourceMappingURL=Color.js.map

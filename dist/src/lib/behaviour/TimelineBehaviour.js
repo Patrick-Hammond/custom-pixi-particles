@@ -1,12 +1,9 @@
 import BehaviourNames from './BehaviourNames';
 import Behaviour from './Behaviour';
 export default class TimelineBehaviour extends Behaviour {
-    constructor() {
-        super(...arguments);
-        this.enabled = true;
-        this.priority = 0;
-        this.timeline = [];
-    }
+    enabled = true;
+    priority = 0;
+    timeline = [];
     init(particle) {
         if (!this.enabled)
             return;

@@ -7,7 +7,7 @@ const deepClone = (obj, hash = new WeakMap()) => {
     try {
         result = new obj.constructor();
     }
-    catch (_a) {
+    catch {
         result = Object.create(Object.getPrototypeOf(obj));
     }
     hash.set(obj, result);
@@ -38,35 +38,36 @@ const deepClone = (obj, hash = new WeakMap()) => {
  * Class used to parse a behaviour object into a JSON config object and vice versa
  */
 export default class BehaviourParser {
+    _behaviour;
     /**
      * Constructs a BehaviourParser object.
      * @param {any} behaviour The behaviour to be parsed.
      */
     constructor(behaviour) {
-        /**
-         * Writes the behaviour to a config object.
-         * @returns {object} The config object.
-         */
-        this.write = () => {
-            const config = deepClone(this._behaviour.getProps());
-            config.name = this._behaviour.getName();
-            return config;
-        };
-        /**
-         * Reads a config object and sets the behaviour appropriately.
-         * @param {object} config The config object to be read.
-         */
-        this.read = (config) => {
-            for (const key in config) {
-                if (this._behaviour[key] instanceof Object && typeof this._behaviour[key].copyFromRawData === 'function') {
-                    this._behaviour[key].copyFromRawData(config[key]);
-                }
-                else {
-                    this._behaviour[key] = config[key];
-                }
-            }
-        };
         this._behaviour = behaviour;
     }
+    /**
+     * Writes the behaviour to a config object.
+     * @returns {object} The config object.
+     */
+    write = () => {
+        const config = deepClone(this._behaviour.getProps());
+        config.name = this._behaviour.getName();
+        return config;
+    };
+    /**
+     * Reads a config object and sets the behaviour appropriately.
+     * @param {object} config The config object to be read.
+     */
+    read = (config) => {
+        for (const key in config) {
+            if (this._behaviour[key] instanceof Object && typeof this._behaviour[key].copyFromRawData === 'function') {
+                this._behaviour[key].copyFromRawData(config[key]);
+            }
+            else {
+                this._behaviour[key] = config[key];
+            }
+        }
+    };
 }
 //# sourceMappingURL=BehaviourParser.js.map

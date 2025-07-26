@@ -12,7 +12,7 @@ export default class AttractionRepulsionBehaviour extends Behaviour {
      * List of influence points affecting particles.
      * Each point: { point: Point, strength: number, range: number }
      */
-    influencePoints: never[];
+    influencePoints: any[];
     /**
      * Initializes the particle, but does not modify position directly.
      * @param {Particle} particle - The particle to initialize.
@@ -36,7 +36,7 @@ export default class AttractionRepulsionBehaviour extends Behaviour {
     getProps(): {
         enabled: boolean;
         priority: number;
-        influencePoints: never[];
+        influencePoints: any[];
         name: string;
     };
 }

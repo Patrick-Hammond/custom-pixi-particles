@@ -1,26 +1,24 @@
 export default class Model {
-    constructor() {
-        /**
-         * Boolean value indicating whether warping is enabled
-         */
-        this.warp = false;
-        /**
-         * The Z position of the camera
-         */
-        this.cameraZ = 0;
-        /**
-         * The conversion rate for cameraZ
-         */
-        this.cameraZConverter = 0;
-        /**
-         * The speed of warp
-         */
-        this.warpSpeed = 0;
-        /**
-         * The base speed of warp
-         */
-        this.warpBaseSpeed = 0;
-    }
+    /**
+     * Boolean value indicating whether warping is enabled
+     */
+    warp = false;
+    /**
+     * The Z position of the camera
+     */
+    cameraZ = 0;
+    /**
+     * The conversion rate for cameraZ
+     */
+    cameraZConverter = 0;
+    /**
+     * The speed of warp
+     */
+    warpSpeed = 0;
+    /**
+     * The base speed of warp
+     */
+    warpBaseSpeed = 0;
     /**
      * Update the model with the behaviour object
      * @param {Object} behaviour - The behaviour object

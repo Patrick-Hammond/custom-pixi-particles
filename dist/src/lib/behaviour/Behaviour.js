@@ -6,33 +6,23 @@ import { Random } from '../util';
  * @class
  */
 export default class Behaviour {
-    constructor() {
-        /**
-         * A protected property used to store the priority of the behaviour
-         *
-         * @protected
-         */
-        this.priority = 0;
-        /**
-         * Calculates the variance from a given value
-         *
-         * @param {number} value - a given value
-         * @returns {number} the variance based on the given value
-         */
-        this.varianceFrom = (value) => {
-            if (value === 0)
-                return 0;
-            return Random.uniform(-1.0, 1.0) * value;
-        };
-        /**
-         * Gets the parser for the behaviour
-         *
-         * @returns {BehaviourParser} The parser for the behaviour
-         */
-        this.getParser = () => {
-            return new BehaviourParser(this);
-        };
-    }
+    /**
+     * A protected property used to store the priority of the behaviour
+     *
+     * @protected
+     */
+    priority = 0;
+    /**
+     * Calculates the variance from a given value
+     *
+     * @param {number} value - a given value
+     * @returns {number} the variance based on the given value
+     */
+    varianceFrom = (value) => {
+        if (value === 0)
+            return 0;
+        return Random.uniform(-1.0, 1.0) * value;
+    };
     /**
      * Gets the name of the behaviour
      *
@@ -41,5 +31,13 @@ export default class Behaviour {
     getName() {
         throw new Error('This method has to be overridden in subclass');
     }
+    /**
+     * Gets the parser for the behaviour
+     *
+     * @returns {BehaviourParser} The parser for the behaviour
+     */
+    getParser = () => {
+        return new BehaviourParser(this);
+    };
 }
 //# sourceMappingURL=Behaviour.js.map

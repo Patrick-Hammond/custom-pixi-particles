@@ -12,6 +12,25 @@ import Model from '../Model';
  * @class Renderer
  */
 export default class Renderer extends Container {
+    // @ts-ignore
+    blendMode;
+    emitter;
+    turbulenceEmitter;
+    _paused = false;
+    _internalPaused = false;
+    textures;
+    zeroPad = 2;
+    indexToStart = 0;
+    finishingTextureNames;
+    unusedSprites = [];
+    emitterParser;
+    turbulenceParser;
+    config;
+    anchor = { x: 0.5, y: 0.5 };
+    _model = new Model();
+    _ticker;
+    _visibilitychangeBinding;
+    frameCache = {};
     /**
      * Creates an instance of Renderer.
      *
@@ -20,28 +39,6 @@ export default class Renderer extends Container {
     constructor(settings) {
         const { textures, emitterConfig, finishingTextures, animatedSpriteZeroPad, animatedSpriteIndexToStart, vertices, position, rotation, uvs, tint, maxParticles, maxFPS, minFPS, tickerSpeed, } = settings;
         super();
-        this._paused = false;
-        this._internalPaused = false;
-        this.zeroPad = 2;
-        this.indexToStart = 0;
-        this.unusedSprites = [];
-        this.anchor = { x: 0.5, y: 0.5 };
-        this._model = new Model();
-        this.frameCache = {};
-        this.onComplete = () => {
-            /**/
-        };
-        this.onCompleteFN = () => {
-            /**/
-        };
-        this.getByName = (name) => {
-            for (let i = 0; i < this.config.behaviours.length; ++i) {
-                if (this.config.behaviours[i].name === name) {
-                    return this.config.behaviours[i];
-                }
-            }
-            return null;
-        };
         this.config = emitterConfig;
         this.textures = textures;
         this.finishingTextureNames = finishingTextures;
@@ -92,6 +89,12 @@ export default class Renderer extends Container {
         ticker.start();
         this._ticker = ticker;
     }
+    onComplete = () => {
+        /**/
+    };
+    onCompleteFN = () => {
+        /**/
+    };
     /**
      * Sets the paused state of the object.
      *
@@ -113,10 +116,9 @@ export default class Renderer extends Container {
      * Updates the transform of the ParticleContainer and updates the emitters.
      */
     _updateTransform(deltaTime) {
-        var _a;
         if (this._paused)
             return;
-        (_a = this.emitter) === null || _a === void 0 ? void 0 : _a.update(deltaTime.deltaTime);
+        this.emitter?.update(deltaTime.deltaTime);
         if (this.turbulenceEmitter) {
             this.turbulenceEmitter.update(deltaTime.deltaTime);
         }
@@ -127,11 +129,10 @@ export default class Renderer extends Container {
      * @description This method updates the texture of the unused sprites and children to a randomly generated texture.
      */
     updateTexture() {
-        var _a;
         for (let i = 0; i < this.unusedSprites.length; ++i) {
             this.unusedSprites[i].texture = Assets.get(this.getRandomTexture());
         }
-        for (let i = 0; i < ((_a = this.children) === null || _a === void 0 ? void 0 : _a.length); ++i) {
+        for (let i = 0; i < this.children?.length; ++i) {
             // @ts-ignore
             this.children[i].texture = Texture.from(this.getRandomTexture());
         }
@@ -141,8 +142,7 @@ export default class Renderer extends Container {
      * @function start
      */
     start() {
-        var _a;
-        (_a = this.emitter) === null || _a === void 0 ? void 0 : _a.resetAndPlay();
+        this.emitter?.resetAndPlay();
         if (this.turbulenceEmitter) {
             this.turbulenceEmitter.resetAndPlay();
         }
@@ -152,8 +152,7 @@ export default class Renderer extends Container {
      * @function play
      */
     play() {
-        var _a;
-        (_a = this.emitter) === null || _a === void 0 ? void 0 : _a.resetWithoutRemovingAndPlay();
+        this.emitter?.resetWithoutRemovingAndPlay();
         if (this.turbulenceEmitter) {
             this.turbulenceEmitter.resetWithoutRemovingAndPlay();
         }
@@ -162,14 +161,13 @@ export default class Renderer extends Container {
      * Immediately stops emitting particles
      */
     stopImmediately() {
-        var _a, _b, _c;
-        (_a = this._ticker) === null || _a === void 0 ? void 0 : _a.destroy();
+        this._ticker?.destroy();
         this._ticker = undefined;
-        (_b = this.emitter) === null || _b === void 0 ? void 0 : _b.stop();
+        this.emitter?.stop();
         if (this.turbulenceEmitter) {
             this.turbulenceEmitter.stop();
         }
-        (_c = this.emitter) === null || _c === void 0 ? void 0 : _c.emit(Emitter.COMPLETE);
+        this.emitter?.emit(Emitter.COMPLETE);
     }
     /**
      * Destroy particles
@@ -212,8 +210,7 @@ export default class Renderer extends Container {
      * Terminates the emitter and any turbulence emitter it is associated with
      */
     stop() {
-        var _a;
-        (_a = this.emitter) === null || _a === void 0 ? void 0 : _a.stopWithoutKilling();
+        this.emitter?.stopWithoutKilling();
         if (this.turbulenceEmitter) {
             this.turbulenceEmitter.stop();
         }
@@ -222,8 +219,7 @@ export default class Renderer extends Container {
      * Resets the emitters to their initial state
      */
     resetEmitter() {
-        var _a;
-        (_a = this.emitter) === null || _a === void 0 ? void 0 : _a.reset();
+        this.emitter?.reset();
         if (this.turbulenceEmitter) {
             this.turbulenceEmitter.reset();
         }
@@ -243,8 +239,7 @@ export default class Renderer extends Container {
      * @param {boolean} resetDuration - should duration be reset
      */
     updateConfig(config, resetDuration = false) {
-        var _a;
-        (_a = this.emitterParser) === null || _a === void 0 ? void 0 : _a.update(config, this._model, resetDuration);
+        this.emitterParser?.update(config, this._model, resetDuration);
         if (this.turbulenceEmitter) {
             const turbulenceConfigIndex = this.getConfigIndexByName(BehaviourNames.TURBULENCE_BEHAVIOUR, config);
             if (turbulenceConfigIndex !== -1) {
@@ -261,11 +256,10 @@ export default class Renderer extends Container {
      * @param {boolean} resetDuration - should duration be reset
      */
     updatePosition(position, resetDuration = true) {
-        var _a;
         const behaviour = this.getByName(BehaviourNames.SPAWN_BEHAVIOUR);
         behaviour.customPoints[0].position.x = position.x;
         behaviour.customPoints[0].position.y = position.y;
-        (_a = this.emitterParser) === null || _a === void 0 ? void 0 : _a.update(this.config, this._model, resetDuration);
+        this.emitterParser?.update(this.config, this._model, resetDuration);
     }
     /**
      * Clears the sprite pool, the unused sprites list and the turbulence and particle pools.
@@ -285,8 +279,15 @@ export default class Renderer extends Container {
         }
         ParticlePool.global.reset();
     }
+    getByName = (name) => {
+        for (let i = 0; i < this.config.behaviours.length; ++i) {
+            if (this.config.behaviours[i].name === name) {
+                return this.config.behaviours[i];
+            }
+        }
+        return null;
+    };
     getOrCreateSprite() {
-        var _a, _b, _c;
         if (this.unusedSprites.length > 0) {
             const sprite = this.unusedSprites.pop();
             if (this.finishingTextureNames && this.finishingTextureNames.length) {
@@ -294,15 +295,15 @@ export default class Renderer extends Container {
             }
             return sprite;
         }
-        if ((_a = this.emitter) === null || _a === void 0 ? void 0 : _a.animatedSprite) {
+        if (this.emitter?.animatedSprite) {
             const textures = this.createFrameAnimationByName(this.getRandomTexture());
             if (textures.length) {
                 const animation = new AnimatedSprite(textures);
                 animation.anchor.set(this.anchor.x, this.anchor.y);
                 // @ts-ignore
-                animation.loop = (_b = this.emitter) === null || _b === void 0 ? void 0 : _b.animatedSprite.loop;
+                animation.loop = this.emitter?.animatedSprite.loop;
                 // @ts-ignore
-                animation.animationSpeed = (_c = this.emitter) === null || _c === void 0 ? void 0 : _c.animatedSprite.frameRate;
+                animation.animationSpeed = this.emitter?.animatedSprite.frameRate;
                 return this.addChild(animation);
             }
         }
@@ -346,7 +347,6 @@ export default class Renderer extends Container {
         return textures;
     }
     onCreate(particle) {
-        var _a;
         const sprite = this.getOrCreateSprite();
         sprite.visible = true;
         sprite.alpha = 1;
@@ -354,7 +354,7 @@ export default class Renderer extends Container {
             sprite.blendMode = this.blendMode;
         }
         if (sprite instanceof AnimatedSprite) {
-            if ((_a = this.emitter) === null || _a === void 0 ? void 0 : _a.animatedSprite.randomFrameStart) {
+            if (this.emitter?.animatedSprite.randomFrameStart) {
                 const textures = this.createFrameAnimationByName(this.getRandomTexture());
                 sprite.gotoAndPlay(this.getRandomFrameNumber(textures.length));
             }
@@ -444,17 +444,16 @@ export default class Renderer extends Container {
         return Math.floor(Math.random() * textures);
     }
     paused(paused) {
-        var _a, _b, _c, _d;
         if (paused === this._paused)
             return;
         this._paused = paused;
         if (paused) {
-            (_a = this._ticker) === null || _a === void 0 ? void 0 : _a.stop();
-            (_b = this.emitter) === null || _b === void 0 ? void 0 : _b.pause();
+            this._ticker?.stop();
+            this.emitter?.pause();
         }
         else {
-            (_c = this._ticker) === null || _c === void 0 ? void 0 : _c.start();
-            (_d = this.emitter) === null || _d === void 0 ? void 0 : _d.resume();
+            this._ticker?.start();
+            this.emitter?.resume();
         }
     }
     internalPause(paused) {

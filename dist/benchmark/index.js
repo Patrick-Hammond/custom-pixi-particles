@@ -50,6 +50,10 @@ function benchAmplitude() {
     console.log('getAmplitude old vs new (ms):', oldTime, newTime);
 }
 class OldColor {
+    r;
+    g;
+    b;
+    alpha;
     constructor(r = 0, g = 0, b = 0, a = 1) {
         this.r = r;
         this.g = g;

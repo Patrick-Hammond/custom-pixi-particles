@@ -3,324 +3,321 @@ import { Behaviour, BehaviourNames } from './index';
 import MinMax from '../util/MinMax';
 import ThereBack from '../util/ThereBack';
 export default class PositionBehaviour extends Behaviour {
-    constructor() {
-        super(...arguments);
-        this.enabled = false;
-        this.priority = 100;
-        this.warp = false;
-        this.warpSpeed = 0;
-        this.warpBaseSpeed = 0;
-        this.sinX = false;
-        this.sinY = false;
-        this.sinXVal = new Point();
-        this.sinYVal = new Point();
-        this.sinXValVariance = new Point();
-        this.sinYValVariance = new Point();
-        this.positionVariance = new Point();
-        this.velocity = new Point();
-        this.velocityVariance = new Point();
-        this.acceleration = new Point();
-        this.accelerationVariance = new Point();
-        this.cameraZConverter = 10;
-        this.warpFov = 20;
-        this.warpStretch = 5;
-        this.warpDistanceScaleConverter = 2000;
-        this.warpDistanceToCenter = false;
-        this.fromAtoB = false;
-        this.fromAtoBTwoWays = false;
-        this.pointA = new Point();
-        this.pointB = new Point();
-        this.thereDuration = new MinMax();
-        this.thereAmplitude = new MinMax();
-        this.backDuration = new MinMax();
-        this.backAmplitude = new MinMax();
-        this.there = new ThereBack();
-        this.back = new ThereBack();
-        /**
-         * Function that initializes a particle
-         * @param {Particle} particle - The particle to be initialized
-         * @param {Model} model - The model of the particle
-         */
-        this.init = (particle, model) => {
-            if (!this.fromAtoB) {
-                particle.velocity.x = this.calculate(this.velocity.x, this.velocityVariance.x);
-                particle.velocity.y = this.calculate(this.velocity.y, this.velocityVariance.y);
-                particle.acceleration.x = this.calculate(this.acceleration.x, this.accelerationVariance.x);
-                particle.acceleration.y = this.calculate(this.acceleration.y, this.accelerationVariance.y);
-                if (this.sinX) {
-                    particle.sinXVal.x = this.calculate(this.sinXVal.x, this.sinXValVariance.x);
-                    particle.sinXVal.y = this.calculate(this.sinXVal.y, this.sinXValVariance.y);
-                }
-                if (this.sinY) {
-                    particle.sinYVal.x = this.calculate(this.sinYVal.x, this.sinYValVariance.x);
-                    particle.sinYVal.y = this.calculate(this.sinYVal.y, this.sinYValVariance.y);
-                }
-                particle.x = particle.movement.x;
-                particle.y = particle.movement.y;
-                this.restartWarp(particle, true, model);
+    enabled = false;
+    priority = 100;
+    warp = false;
+    warpSpeed = 0;
+    warpBaseSpeed = 0;
+    sinX = false;
+    sinY = false;
+    sinXVal = new Point();
+    sinYVal = new Point();
+    sinXValVariance = new Point();
+    sinYValVariance = new Point();
+    positionVariance = new Point();
+    velocity = new Point();
+    velocityVariance = new Point();
+    acceleration = new Point();
+    accelerationVariance = new Point();
+    cameraZConverter = 10;
+    warpFov = 20;
+    warpStretch = 5;
+    warpDistanceScaleConverter = 2000;
+    warpDistanceToCenter = false;
+    fromAtoB = false;
+    fromAtoBTwoWays = false;
+    pointA = new Point();
+    pointB = new Point();
+    thereDuration = new MinMax();
+    thereAmplitude = new MinMax();
+    backDuration = new MinMax();
+    backAmplitude = new MinMax();
+    there = new ThereBack();
+    back = new ThereBack();
+    /**
+     * Function that initializes a particle
+     * @param {Particle} particle - The particle to be initialized
+     * @param {Model} model - The model of the particle
+     */
+    init = (particle, model) => {
+        if (!this.fromAtoB) {
+            particle.velocity.x = this.calculate(this.velocity.x, this.velocityVariance.x);
+            particle.velocity.y = this.calculate(this.velocity.y, this.velocityVariance.y);
+            particle.acceleration.x = this.calculate(this.acceleration.x, this.accelerationVariance.x);
+            particle.acceleration.y = this.calculate(this.acceleration.y, this.accelerationVariance.y);
+            if (this.sinX) {
+                particle.sinXVal.x = this.calculate(this.sinXVal.x, this.sinXValVariance.x);
+                particle.sinXVal.y = this.calculate(this.sinXVal.y, this.sinXValVariance.y);
+            }
+            if (this.sinY) {
+                particle.sinYVal.x = this.calculate(this.sinYVal.x, this.sinYValVariance.x);
+                particle.sinYVal.y = this.calculate(this.sinYVal.y, this.sinYValVariance.y);
+            }
+            particle.x = particle.movement.x;
+            particle.y = particle.movement.y;
+            this.restartWarp(particle, true, model);
+        }
+        else {
+            particle.thereDuration =
+                Math.random() * (this.thereDuration.max - this.thereDuration.min) + this.thereDuration.min;
+            particle.thereAmplitude =
+                Math.random() * (this.thereAmplitude.max - this.thereAmplitude.min) + this.thereAmplitude.min;
+            particle.backDuration = Math.random() * (this.backDuration.max - this.backDuration.min) + this.backDuration.min;
+            particle.backAmplitude =
+                Math.random() * (this.backAmplitude.max - this.backAmplitude.min) + this.backAmplitude.min;
+            particle.pointA.copyFrom(this.pointA);
+            particle.pointB.copyFrom(this.pointB);
+            particle.xStart = this.pointA.x;
+            particle.yStart = this.pointA.y;
+            particle.xTarget = this.pointB.x;
+            particle.yTarget = this.pointB.y;
+            particle.there.copyFrom(this.there);
+            particle.back.copyFrom(this.back);
+        }
+    };
+    /**
+     * Restarts the warp of a particle
+     * @param {Particle} particle - The particle to restart the warp on
+     * @param {boolean} initial - True if this is the initial warp, false if it is a subsequent one
+     * @param {Model} model - The model containing the camera Z property
+     */
+    restartWarp = (particle, initial, model) => {
+        if (!this.warp)
+            return;
+        const { sizeStart } = particle;
+        if (initial) {
+            particle.z = Math.random() * this.warpDistanceScaleConverter;
+        }
+        else {
+            particle.z = model.cameraZ + Math.random() * this.warpDistanceScaleConverter;
+        }
+        const distance = Math.random() * this.positionVariance.x + 1;
+        const deg = Math.random() * (Math.PI * 2);
+        particle.warpSizeStart.x = (1 - distance / this.positionVariance.x) * 0.5 * sizeStart.x;
+        particle.warpSizeStart.y = (1 - distance / this.positionVariance.y) * 0.5 * sizeStart.y;
+        if (this.warpDistanceToCenter) {
+            particle.movement.x = Math.cos(deg) * distance;
+            particle.movement.y = Math.sin(deg) * distance;
+        }
+        else {
+            particle.x = Math.cos(deg) * distance;
+            particle.y = Math.sin(deg) * distance;
+        }
+        particle.color.alpha = (1 - distance / this.positionVariance.x) * 0.5;
+    };
+    /**
+     * Adds a random variance to the given value
+     * @param {number} value - The value to calculate
+     * @param {number} variance - The random variance to add
+     * @returns {number} The calculated value
+     */
+    calculate = (value, variance) => {
+        return value + this.varianceFrom(variance);
+    };
+    /**
+     * Applies the particle's velocity and acceleration to move it and calculate its size, rotation, and position.
+     * @param {Particle} particle - The particle to be moved
+     * @param {number} deltaTime - The time delta for the movement calculation
+     * @param {Model} model - The model containing information about the particle's movement
+     */
+    apply = (particle, deltaTime, model) => {
+        if (particle.skipPositionBehaviour)
+            return;
+        if (!this.fromAtoB) {
+            const { acceleration, sinXVal, sinYVal, z, warpSizeStart, movement } = particle;
+            const { cameraZ } = model;
+            const PI = Math.PI;
+            particle.velocity.x += acceleration.x * deltaTime;
+            particle.velocity.y += acceleration.y * deltaTime;
+            const movementX = movement.x + particle.velocity.x * deltaTime;
+            const movementY = movement.y + particle.velocity.y * deltaTime;
+            particle.movement.x = movementX;
+            particle.movement.y = movementY;
+            if (this.sinX) {
+                particle.x = movementX + Math.sin(PI * (movementY / sinXVal.x)) * sinXVal.y;
             }
             else {
-                particle.thereDuration =
-                    Math.random() * (this.thereDuration.max - this.thereDuration.min) + this.thereDuration.min;
-                particle.thereAmplitude =
-                    Math.random() * (this.thereAmplitude.max - this.thereAmplitude.min) + this.thereAmplitude.min;
-                particle.backDuration = Math.random() * (this.backDuration.max - this.backDuration.min) + this.backDuration.min;
-                particle.backAmplitude =
-                    Math.random() * (this.backAmplitude.max - this.backAmplitude.min) + this.backAmplitude.min;
-                particle.pointA.copyFrom(this.pointA);
-                particle.pointB.copyFrom(this.pointB);
-                particle.xStart = this.pointA.x;
-                particle.yStart = this.pointA.y;
-                particle.xTarget = this.pointB.x;
-                particle.yTarget = this.pointB.y;
-                particle.there.copyFrom(this.there);
-                particle.back.copyFrom(this.back);
+                particle.x = movementX;
             }
-        };
-        /**
-         * Restarts the warp of a particle
-         * @param {Particle} particle - The particle to restart the warp on
-         * @param {boolean} initial - True if this is the initial warp, false if it is a subsequent one
-         * @param {Model} model - The model containing the camera Z property
-         */
-        this.restartWarp = (particle, initial, model) => {
-            if (!this.warp)
+            if (this.sinY) {
+                particle.y = movementY + Math.sin(PI * (movementX / sinYVal.x)) * sinYVal.y;
+            }
+            else {
+                particle.y = movementY;
+            }
+            if (model.warp) {
+                if (z < cameraZ) {
+                    this.restartWarp(particle, false, model);
+                }
+                const newZ = z - cameraZ;
+                const dxCenter = movementX;
+                const dyCenter = movementY;
+                const distanceCenter = Math.sqrt(dxCenter * dxCenter + dyCenter * dyCenter);
+                const distanceScale = Math.max(0, (this.warpDistanceScaleConverter - newZ) / this.warpDistanceScaleConverter);
+                const fovZ = this.warpFov / newZ;
+                particle.x = movementX * fovZ;
+                particle.y = movementY * fovZ;
+                particle.size.x = distanceScale * warpSizeStart.x;
+                particle.size.y =
+                    distanceScale * warpSizeStart.y + distanceScale * this.warpSpeed * this.warpStretch * distanceCenter;
+                particle.rotation = Math.atan2(dyCenter, dxCenter) + PI / 2;
+            }
+        }
+        else {
+            let progress = particle.progress;
+            if (this.fromAtoBTwoWays && progress >= 1) {
+                particle.direction = -particle.direction;
+                particle.progress = 0;
+                progress = 0;
+                particle.time = 0;
+            }
+            else if (progress > 1) {
                 return;
-            const { sizeStart } = particle;
-            if (initial) {
-                particle.z = Math.random() * this.warpDistanceScaleConverter;
             }
-            else {
-                particle.z = model.cameraZ + Math.random() * this.warpDistanceScaleConverter;
-            }
-            const distance = Math.random() * this.positionVariance.x + 1;
-            const deg = Math.random() * (Math.PI * 2);
-            particle.warpSizeStart.x = (1 - distance / this.positionVariance.x) * 0.5 * sizeStart.x;
-            particle.warpSizeStart.y = (1 - distance / this.positionVariance.y) * 0.5 * sizeStart.y;
-            if (this.warpDistanceToCenter) {
-                particle.movement.x = Math.cos(deg) * distance;
-                particle.movement.y = Math.sin(deg) * distance;
-            }
-            else {
-                particle.x = Math.cos(deg) * distance;
-                particle.y = Math.sin(deg) * distance;
-            }
-            particle.color.alpha = (1 - distance / this.positionVariance.x) * 0.5;
-        };
-        /**
-         * Adds a random variance to the given value
-         * @param {number} value - The value to calculate
-         * @param {number} variance - The random variance to add
-         * @returns {number} The calculated value
-         */
-        this.calculate = (value, variance) => {
-            return value + this.varianceFrom(variance);
-        };
-        /**
-         * Applies the particle's velocity and acceleration to move it and calculate its size, rotation, and position.
-         * @param {Particle} particle - The particle to be moved
-         * @param {number} deltaTime - The time delta for the movement calculation
-         * @param {Model} model - The model containing information about the particle's movement
-         */
-        this.apply = (particle, deltaTime, model) => {
-            if (particle.skipPositionBehaviour)
-                return;
-            if (!this.fromAtoB) {
-                const { acceleration, sinXVal, sinYVal, z, warpSizeStart, movement } = particle;
-                const { cameraZ } = model;
-                const PI = Math.PI;
-                particle.velocity.x += acceleration.x * deltaTime;
-                particle.velocity.y += acceleration.y * deltaTime;
-                const movementX = movement.x + particle.velocity.x * deltaTime;
-                const movementY = movement.y + particle.velocity.y * deltaTime;
-                particle.movement.x = movementX;
-                particle.movement.y = movementY;
-                if (this.sinX) {
-                    particle.x = movementX + Math.sin(PI * (movementY / sinXVal.x)) * sinXVal.y;
+            let easedProgress = progress;
+            if (particle.direction === 1) {
+                if (particle.there.ease === 'back.inOut') {
+                    easedProgress = this._easeBackInOut(progress);
+                }
+                else if (particle.there.ease === 'back.in') {
+                    easedProgress = this._easeBackIn(progress);
+                }
+                else if (particle.there.ease === 'back.out') {
+                    easedProgress = this._easeBackOut(progress);
+                }
+                else if (particle.there.ease === 'power1.in') {
+                    easedProgress = this._easePower1In(progress);
+                }
+                else if (particle.there.ease === 'power1.out') {
+                    easedProgress = this._easePower1Out(progress);
+                }
+                else if (particle.there.ease === 'power1.inOut') {
+                    easedProgress = this._easePower1InOut(progress);
+                }
+                else if (particle.there.ease === 'bounce.in') {
+                    easedProgress = this._easeBounceIn(progress);
+                }
+                else if (particle.there.ease === 'bounce.out') {
+                    easedProgress = this._easeBounceOut(progress);
+                }
+                else if (particle.there.ease === 'bounce.inOut') {
+                    easedProgress = this._easeBounceInOut(progress);
+                }
+                else if (particle.there.ease === 'elastic.in') {
+                    easedProgress = this._easeElasticIn(progress);
+                }
+                else if (particle.there.ease === 'elastic.out') {
+                    easedProgress = this._easeElasticOut(progress);
+                }
+                else if (particle.there.ease === 'elastic.inOut') {
+                    easedProgress = this._easeElasticInOut(progress);
+                }
+                else if (particle.there.ease === 'steps') {
+                    easedProgress = this._easeSteps(progress);
+                }
+                const xInterpolated = this._lerp(particle.xStart, particle.xTarget, easedProgress);
+                const yInterpolated = this._lerp(particle.yStart, particle.yTarget, easedProgress);
+                if (particle.there.x === 'Sin') {
+                    particle.x = xInterpolated + Math.sin(progress * Math.PI) * particle.thereAmplitude;
+                }
+                else if (particle.there.x === 'Cos') {
+                    particle.x = xInterpolated + Math.cos(progress * Math.PI) * particle.thereAmplitude;
+                }
+                else if (particle.there.x === 'Tan') {
+                    particle.x = xInterpolated + Math.tan(progress * Math.PI) * particle.thereAmplitude;
                 }
                 else {
-                    particle.x = movementX;
+                    particle.x = xInterpolated + easedProgress;
                 }
-                if (this.sinY) {
-                    particle.y = movementY + Math.sin(PI * (movementX / sinYVal.x)) * sinYVal.y;
+                if (particle.there.y === 'Sin') {
+                    particle.y = yInterpolated + Math.sin(progress * Math.PI) * particle.thereAmplitude;
+                }
+                else if (particle.there.y === 'Cos') {
+                    particle.y = yInterpolated + Math.cos(progress * Math.PI) * particle.thereAmplitude;
+                }
+                else if (particle.there.y === 'Tan') {
+                    particle.y = yInterpolated + Math.tan(progress * Math.PI) * particle.thereAmplitude;
                 }
                 else {
-                    particle.y = movementY;
-                }
-                if (model.warp) {
-                    if (z < cameraZ) {
-                        this.restartWarp(particle, false, model);
-                    }
-                    const newZ = z - cameraZ;
-                    const dxCenter = movementX;
-                    const dyCenter = movementY;
-                    const distanceCenter = Math.sqrt(dxCenter * dxCenter + dyCenter * dyCenter);
-                    const distanceScale = Math.max(0, (this.warpDistanceScaleConverter - newZ) / this.warpDistanceScaleConverter);
-                    const fovZ = this.warpFov / newZ;
-                    particle.x = movementX * fovZ;
-                    particle.y = movementY * fovZ;
-                    particle.size.x = distanceScale * warpSizeStart.x;
-                    particle.size.y =
-                        distanceScale * warpSizeStart.y + distanceScale * this.warpSpeed * this.warpStretch * distanceCenter;
-                    particle.rotation = Math.atan2(dyCenter, dxCenter) + PI / 2;
+                    particle.y = yInterpolated + easedProgress;
                 }
             }
             else {
-                let progress = particle.progress;
-                if (this.fromAtoBTwoWays && progress >= 1) {
-                    particle.direction = -particle.direction;
-                    particle.progress = 0;
-                    progress = 0;
-                    particle.time = 0;
+                if (particle.back.ease === 'back.inOut') {
+                    easedProgress = this._easeBackInOut(progress);
                 }
-                else if (progress > 1) {
-                    return;
+                else if (particle.back.ease === 'back.in') {
+                    easedProgress = this._easeBackIn(progress);
                 }
-                let easedProgress = progress;
-                if (particle.direction === 1) {
-                    if (particle.there.ease === 'back.inOut') {
-                        easedProgress = this._easeBackInOut(progress);
-                    }
-                    else if (particle.there.ease === 'back.in') {
-                        easedProgress = this._easeBackIn(progress);
-                    }
-                    else if (particle.there.ease === 'back.out') {
-                        easedProgress = this._easeBackOut(progress);
-                    }
-                    else if (particle.there.ease === 'power1.in') {
-                        easedProgress = this._easePower1In(progress);
-                    }
-                    else if (particle.there.ease === 'power1.out') {
-                        easedProgress = this._easePower1Out(progress);
-                    }
-                    else if (particle.there.ease === 'power1.inOut') {
-                        easedProgress = this._easePower1InOut(progress);
-                    }
-                    else if (particle.there.ease === 'bounce.in') {
-                        easedProgress = this._easeBounceIn(progress);
-                    }
-                    else if (particle.there.ease === 'bounce.out') {
-                        easedProgress = this._easeBounceOut(progress);
-                    }
-                    else if (particle.there.ease === 'bounce.inOut') {
-                        easedProgress = this._easeBounceInOut(progress);
-                    }
-                    else if (particle.there.ease === 'elastic.in') {
-                        easedProgress = this._easeElasticIn(progress);
-                    }
-                    else if (particle.there.ease === 'elastic.out') {
-                        easedProgress = this._easeElasticOut(progress);
-                    }
-                    else if (particle.there.ease === 'elastic.inOut') {
-                        easedProgress = this._easeElasticInOut(progress);
-                    }
-                    else if (particle.there.ease === 'steps') {
-                        easedProgress = this._easeSteps(progress);
-                    }
-                    const xInterpolated = this._lerp(particle.xStart, particle.xTarget, easedProgress);
-                    const yInterpolated = this._lerp(particle.yStart, particle.yTarget, easedProgress);
-                    if (particle.there.x === 'Sin') {
-                        particle.x = xInterpolated + Math.sin(progress * Math.PI) * particle.thereAmplitude;
-                    }
-                    else if (particle.there.x === 'Cos') {
-                        particle.x = xInterpolated + Math.cos(progress * Math.PI) * particle.thereAmplitude;
-                    }
-                    else if (particle.there.x === 'Tan') {
-                        particle.x = xInterpolated + Math.tan(progress * Math.PI) * particle.thereAmplitude;
-                    }
-                    else {
-                        particle.x = xInterpolated + easedProgress;
-                    }
-                    if (particle.there.y === 'Sin') {
-                        particle.y = yInterpolated + Math.sin(progress * Math.PI) * particle.thereAmplitude;
-                    }
-                    else if (particle.there.y === 'Cos') {
-                        particle.y = yInterpolated + Math.cos(progress * Math.PI) * particle.thereAmplitude;
-                    }
-                    else if (particle.there.y === 'Tan') {
-                        particle.y = yInterpolated + Math.tan(progress * Math.PI) * particle.thereAmplitude;
-                    }
-                    else {
-                        particle.y = yInterpolated + easedProgress;
-                    }
+                else if (particle.back.ease === 'back.out') {
+                    easedProgress = this._easeBackOut(progress);
+                }
+                else if (particle.back.ease === 'power1.in') {
+                    easedProgress = this._easePower1In(progress);
+                }
+                else if (particle.back.ease === 'power1.out') {
+                    easedProgress = this._easePower1Out(progress);
+                }
+                else if (particle.back.ease === 'power1.inOut') {
+                    easedProgress = this._easePower1InOut(progress);
+                }
+                else if (particle.back.ease === 'bounce.in') {
+                    easedProgress = this._easeBounceIn(progress);
+                }
+                else if (particle.back.ease === 'bounce.out') {
+                    easedProgress = this._easeBounceOut(progress);
+                }
+                else if (particle.back.ease === 'bounce.inOut') {
+                    easedProgress = this._easeBounceInOut(progress);
+                }
+                else if (particle.back.ease === 'elastic.in') {
+                    easedProgress = this._easeElasticIn(progress);
+                }
+                else if (particle.back.ease === 'elastic.out') {
+                    easedProgress = this._easeElasticOut(progress);
+                }
+                else if (particle.back.ease === 'elastic.inOut') {
+                    easedProgress = this._easeElasticInOut(progress);
+                }
+                else if (particle.back.ease === 'steps') {
+                    easedProgress = this._easeSteps(progress);
+                }
+                const xInterpolated = this._lerp(particle.xTarget, particle.xStart, easedProgress);
+                const yInterpolated = this._lerp(particle.yTarget, particle.yStart, easedProgress);
+                if (particle.back.x === 'Sin') {
+                    particle.x = xInterpolated + Math.sin(progress * Math.PI) * particle.backAmplitude;
+                }
+                else if (particle.back.x === 'Cos') {
+                    particle.x = xInterpolated + Math.cos(progress * Math.PI) * particle.backAmplitude;
+                }
+                else if (particle.back.x === 'Tan') {
+                    particle.x = xInterpolated + Math.tan(progress * Math.PI) * particle.backAmplitude;
                 }
                 else {
-                    if (particle.back.ease === 'back.inOut') {
-                        easedProgress = this._easeBackInOut(progress);
-                    }
-                    else if (particle.back.ease === 'back.in') {
-                        easedProgress = this._easeBackIn(progress);
-                    }
-                    else if (particle.back.ease === 'back.out') {
-                        easedProgress = this._easeBackOut(progress);
-                    }
-                    else if (particle.back.ease === 'power1.in') {
-                        easedProgress = this._easePower1In(progress);
-                    }
-                    else if (particle.back.ease === 'power1.out') {
-                        easedProgress = this._easePower1Out(progress);
-                    }
-                    else if (particle.back.ease === 'power1.inOut') {
-                        easedProgress = this._easePower1InOut(progress);
-                    }
-                    else if (particle.back.ease === 'bounce.in') {
-                        easedProgress = this._easeBounceIn(progress);
-                    }
-                    else if (particle.back.ease === 'bounce.out') {
-                        easedProgress = this._easeBounceOut(progress);
-                    }
-                    else if (particle.back.ease === 'bounce.inOut') {
-                        easedProgress = this._easeBounceInOut(progress);
-                    }
-                    else if (particle.back.ease === 'elastic.in') {
-                        easedProgress = this._easeElasticIn(progress);
-                    }
-                    else if (particle.back.ease === 'elastic.out') {
-                        easedProgress = this._easeElasticOut(progress);
-                    }
-                    else if (particle.back.ease === 'elastic.inOut') {
-                        easedProgress = this._easeElasticInOut(progress);
-                    }
-                    else if (particle.back.ease === 'steps') {
-                        easedProgress = this._easeSteps(progress);
-                    }
-                    const xInterpolated = this._lerp(particle.xTarget, particle.xStart, easedProgress);
-                    const yInterpolated = this._lerp(particle.yTarget, particle.yStart, easedProgress);
-                    if (particle.back.x === 'Sin') {
-                        particle.x = xInterpolated + Math.sin(progress * Math.PI) * particle.backAmplitude;
-                    }
-                    else if (particle.back.x === 'Cos') {
-                        particle.x = xInterpolated + Math.cos(progress * Math.PI) * particle.backAmplitude;
-                    }
-                    else if (particle.back.x === 'Tan') {
-                        particle.x = xInterpolated + Math.tan(progress * Math.PI) * particle.backAmplitude;
-                    }
-                    else {
-                        particle.x = xInterpolated + easedProgress;
-                    }
-                    if (particle.back.y === 'Sin') {
-                        particle.y = yInterpolated + Math.sin(progress * Math.PI) * particle.backAmplitude;
-                    }
-                    else if (particle.back.y === 'Cos') {
-                        particle.y = yInterpolated + Math.cos(progress * Math.PI) * particle.backAmplitude;
-                    }
-                    else if (particle.back.y === 'Tan') {
-                        particle.y = yInterpolated + Math.tan(progress * Math.PI) * particle.backAmplitude;
-                    }
-                    else {
-                        particle.y = yInterpolated + easedProgress;
-                    }
+                    particle.x = xInterpolated + easedProgress;
                 }
-                particle.time += deltaTime;
-                if (particle.direction === 1) {
-                    particle.progress = particle.time / particle.thereDuration;
+                if (particle.back.y === 'Sin') {
+                    particle.y = yInterpolated + Math.sin(progress * Math.PI) * particle.backAmplitude;
+                }
+                else if (particle.back.y === 'Cos') {
+                    particle.y = yInterpolated + Math.cos(progress * Math.PI) * particle.backAmplitude;
+                }
+                else if (particle.back.y === 'Tan') {
+                    particle.y = yInterpolated + Math.tan(progress * Math.PI) * particle.backAmplitude;
                 }
                 else {
-                    particle.progress = particle.time / particle.backDuration;
+                    particle.y = yInterpolated + easedProgress;
                 }
             }
-        };
-    }
+            particle.time += deltaTime;
+            if (particle.direction === 1) {
+                particle.progress = particle.time / particle.thereDuration;
+            }
+            else {
+                particle.progress = particle.time / particle.backDuration;
+            }
+        }
+    };
     /**
      * Gets the name of the behaviour
      * @return {BehaviourNames} The name of the behaviour

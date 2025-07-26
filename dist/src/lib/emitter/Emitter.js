@@ -7,16 +7,27 @@ import List from '../util/List';
 import * as emission from '../emission';
 import { AnimatedSprite } from 'pixi.js';
 import TurbulencePool from '../util/turbulencePool';
-class Emitter extends eventemitter3 {
+export default class Emitter extends eventemitter3 {
+    static STOP = 'emitter/stop';
+    static RESET = 'emitter/reset';
+    static CREATE = 'emitter/create';
+    static UPDATE = 'emitter/update';
+    static REMOVE = 'emitter/remove';
+    static FINISHING = 'emitter/finishing';
+    static COMPLETE = 'emitter/complete';
+    list = new List();
+    duration = new Duration();
+    animatedSprite;
+    alpha = 1;
+    anchor = { x: 0.5, y: 0.5 };
+    blendMode = 'normal';
+    behaviours = new EmitterBehaviours();
+    emitController;
+    turbulencePool = new TurbulencePool();
+    _play;
+    _model;
     constructor(model) {
         super();
-        this.list = new List();
-        this.duration = new Duration();
-        this.alpha = 1;
-        this.anchor = { x: 0.5, y: 0.5 };
-        this.blendMode = 'normal';
-        this.behaviours = new EmitterBehaviours();
-        this.turbulencePool = new TurbulencePool();
         this._model = model;
         // @ts-ignore
         this.emitController = new emission[emission.EmissionTypes.DEFAULT]();
@@ -197,7 +208,6 @@ class Emitter extends eventemitter3 {
         });
     }
     destroy() {
-        var _a;
         this.list.reset();
         // @ts-ignore
         this.list = undefined;
@@ -210,7 +220,7 @@ class Emitter extends eventemitter3 {
         this.duration = undefined;
         // @ts-ignore
         this.animatedSprite = undefined;
-        (_a = this.behaviours) === null || _a === void 0 ? void 0 : _a.clear();
+        this.behaviours?.clear();
         // @ts-ignore
         this.behaviours = undefined;
         if (this.emitController && this.emitController.reset) {
@@ -221,12 +231,4 @@ class Emitter extends eventemitter3 {
         this._model = undefined;
     }
 }
-Emitter.STOP = 'emitter/stop';
-Emitter.RESET = 'emitter/reset';
-Emitter.CREATE = 'emitter/create';
-Emitter.UPDATE = 'emitter/update';
-Emitter.REMOVE = 'emitter/remove';
-Emitter.FINISHING = 'emitter/finishing';
-Emitter.COMPLETE = 'emitter/complete';
-export default Emitter;
 //# sourceMappingURL=Emitter.js.map

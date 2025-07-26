@@ -5,56 +5,53 @@ import { Behaviour, BehaviourNames } from './index';
  * @extends Behaviour
  */
 export default class AttractionRepulsionBehaviour extends Behaviour {
-    constructor() {
-        super(...arguments);
-        this.enabled = true;
-        this.priority = 200; // Ensure this runs after PositionBehaviour if needed
-        /**
-         * List of influence points affecting particles.
-         * Each point: { point: Point, strength: number, range: number }
-         */
-        this.influencePoints = [];
-        /**
-         * Initializes the particle, but does not modify position directly.
-         * @param {Particle} particle - The particle to initialize.
-         */
-        this.init = (particle) => {
-            // Initialization logic if needed.
-        };
-        /**
-         * Applies attraction or repulsion forces to the particle additively.
-         * @param {Particle} particle - The particle to apply the behavior to.
-         * @param {number} deltaTime - Time elapsed since the last frame.
-         */
-        this.apply = (particle, deltaTime) => {
-            if (!this.enabled || particle.skipPositionBehaviour || particle.skipAttractionRepulsionBehaviour)
+    enabled = true;
+    priority = 200; // Ensure this runs after PositionBehaviour if needed
+    /**
+     * List of influence points affecting particles.
+     * Each point: { point: Point, strength: number, range: number }
+     */
+    influencePoints = [];
+    /**
+     * Initializes the particle, but does not modify position directly.
+     * @param {Particle} particle - The particle to initialize.
+     */
+    init = (particle) => {
+        // Initialization logic if needed.
+    };
+    /**
+     * Applies attraction or repulsion forces to the particle additively.
+     * @param {Particle} particle - The particle to apply the behavior to.
+     * @param {number} deltaTime - Time elapsed since the last frame.
+     */
+    apply = (particle, deltaTime) => {
+        if (!this.enabled || particle.skipPositionBehaviour || particle.skipAttractionRepulsionBehaviour)
+            return;
+        // Accumulate influence forces
+        let totalForceX = 0;
+        let totalForceY = 0;
+        this.influencePoints.forEach(({ point, strength, range }) => {
+            // @ts-ignore
+            const dx = point.x - particle.x;
+            // @ts-ignore
+            const dy = point.y - particle.y;
+            const distanceSquared = dx * dx + dy * dy;
+            if (distanceSquared > range * range || distanceSquared === 0)
                 return;
-            // Accumulate influence forces
-            let totalForceX = 0;
-            let totalForceY = 0;
-            this.influencePoints.forEach(({ point, strength, range }) => {
-                // @ts-ignore
-                const dx = point.x - particle.x;
-                // @ts-ignore
-                const dy = point.y - particle.y;
-                const distanceSquared = dx * dx + dy * dy;
-                if (distanceSquared > range * range || distanceSquared === 0)
-                    return;
-                const distance = Math.sqrt(distanceSquared);
-                const force = strength * (1 - distance / range) * deltaTime;
-                const normalizedDx = dx / distance;
-                const normalizedDy = dy / distance;
-                totalForceX += normalizedDx * force;
-                totalForceY += normalizedDy * force;
-            });
-            // Add forces to particle velocity (or acceleration for smoother effects)
-            particle.velocity.x += totalForceX;
-            particle.velocity.y += totalForceY;
-            // Apply updated velocity to position additively
-            particle.x += particle.velocity.x * deltaTime;
-            particle.y += particle.velocity.y * deltaTime;
-        };
-    }
+            const distance = Math.sqrt(distanceSquared);
+            const force = strength * (1 - distance / range) * deltaTime;
+            const normalizedDx = dx / distance;
+            const normalizedDy = dy / distance;
+            totalForceX += normalizedDx * force;
+            totalForceY += normalizedDy * force;
+        });
+        // Add forces to particle velocity (or acceleration for smoother effects)
+        particle.velocity.x += totalForceX;
+        particle.velocity.y += totalForceY;
+        // Apply updated velocity to position additively
+        particle.x += particle.velocity.x * deltaTime;
+        particle.y += particle.velocity.y * deltaTime;
+    };
     /**
      * Gets the name of the behavior.
      * @returns {string} - The name of the behavior.

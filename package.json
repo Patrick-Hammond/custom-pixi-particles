@@ -39,7 +39,7 @@
     "url": "git@github.com:lukasz-okuniewicz/custom-pixi-particles.git"
   },
   "scripts": {
-    "build": "npm run clean-dist && tsc",
+    "build": "npm run clean-dist && npx tsc src/index.ts benchmark/index.ts --outDir dist --module ES2022 --target es2022 --moduleResolution bundler --esModuleInterop --skipLibCheck --declaration --sourceMap",
     "clean-dist": "rimraf dist",
     "lint": "tslint 'src/**/*.ts'",
     "lint:fix": "tslint --fix 'src/**/*.ts'",

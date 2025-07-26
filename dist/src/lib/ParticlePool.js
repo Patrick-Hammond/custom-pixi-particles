@@ -3,13 +3,15 @@ import Particle from './Particle';
  * @class ParticlePool
  * A class for managing a pool of particles.
  */
-class ParticlePool {
-    constructor() {
-        /**
-         * The first element in the pool.
-         */
-        this.first = null;
-    }
+export default class ParticlePool {
+    /**
+     * A static global instance of ParticlePool.
+     */
+    static global = new ParticlePool();
+    /**
+     * The first element in the pool.
+     */
+    first = null;
     /**
      * Removes a particle from the pool and returns it.
      *
@@ -48,9 +50,4 @@ class ParticlePool {
         ParticlePool.global = new ParticlePool();
     }
 }
-/**
- * A static global instance of ParticlePool.
- */
-ParticlePool.global = new ParticlePool();
-export default ParticlePool;
 //# sourceMappingURL=ParticlePool.js.map

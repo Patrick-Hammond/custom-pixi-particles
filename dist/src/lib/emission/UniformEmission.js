@@ -7,21 +7,10 @@ import { AbstractEmission, EmissionTypes } from './index';
  * @extends AbstractEmission
  */
 export default class UniformEmission extends AbstractEmission {
-    constructor() {
-        super(...arguments);
-        this._maxParticles = 0;
-        this._maxLife = 1;
-        this._emitPerSecond = 0;
-        this._frames = 0;
-        /**
-         * Returns EmissionTypes.DEFAULT.
-         *
-         * @returns {string} EmissionTypes.DEFAULT.
-         */
-        this.getName = () => {
-            return EmissionTypes.DEFAULT;
-        };
-    }
+    _maxParticles = 0;
+    _maxLife = 1;
+    _emitPerSecond = 0;
+    _frames = 0;
     /**
      * Calculates the number of particles to emit.
      *
@@ -79,5 +68,13 @@ export default class UniformEmission extends AbstractEmission {
     set emitPerSecond(value) {
         this._emitPerSecond = Math.max(value, 0);
     }
+    /**
+     * Returns EmissionTypes.DEFAULT.
+     *
+     * @returns {string} EmissionTypes.DEFAULT.
+     */
+    getName = () => {
+        return EmissionTypes.DEFAULT;
+    };
 }
 //# sourceMappingURL=UniformEmission.js.map

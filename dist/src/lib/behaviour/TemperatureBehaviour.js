@@ -5,12 +5,9 @@ import behaviourNames from './BehaviourNames';
  * based on whether they are in a hot or cold zone.
  */
 export default class TemperatureBehaviour extends Behaviour {
-    constructor() {
-        super(...arguments);
-        this.enabled = true;
-        this.priority = 150;
-        this.zones = [];
-    }
+    enabled = true;
+    priority = 150;
+    zones = [];
     /**
      * Initializes the particle. This behavior does not require
      * per-particle initialization, but it's included for extensibility.

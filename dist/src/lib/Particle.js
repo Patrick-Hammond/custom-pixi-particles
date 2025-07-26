@@ -3,96 +3,208 @@ import ThereBack from './util/ThereBack';
 /**
  * Represents a particle object used in particle system simulations
  */
-class Particle {
+export default class Particle {
+    static _UID = { value: 0 };
+    next = null;
+    prev = null;
+    /**
+     * Stores the unique ID of the particle
+     */
+    uid = Particle._UID.value++;
+    /**
+     * Stores the movement of the particle
+     */
+    movement = new Point();
+    /**
+     * Stores the acceleration of the particle
+     */
+    acceleration = new Point();
+    /**
+     * Stores the velocity of the particle
+     */
+    velocity = new Point();
+    /**
+     * Stores the size of the particle
+     */
+    size = new Point();
+    /**
+     * Stores the starting size of the particle
+     */
+    sizeStart = new Point();
+    /**
+     * Stores the starting warp size of the particle
+     */
+    warpSizeStart = new Point();
+    /**
+     * Stores the ending size of the particle
+     */
+    sizeEnd = new Point();
+    /**
+     * Stores the x value of the particle for sin wave
+     */
+    sinXVal = new Point();
+    /**
+     * Stores the y value of the particle for sin wave
+     */
+    sinYVal = new Point();
+    /**
+     * Stores the color of the particle
+     */
+    color = new Color();
+    /**
+     * Stores the starting color of the particle
+     */
+    colorStart = new Color();
+    /**
+     * Stores the ending color of the particle
+     */
+    colorEnd = new Color();
+    superColorAlphaEnd = 1;
+    /**
+     * Stores the maximum life time of the particle
+     */
+    maxLifeTime;
+    /**
+     * Stores the current life time of the particle
+     */
+    lifeTime;
+    /**
+     * Stores the current life progress of the particle
+     */
+    lifeProgress;
+    /**
+     * Stores the x position of the particle
+     */
+    x;
+    /**
+     * Stores the y position of the particle
+     */
+    y;
+    /**
+     * Stores the z position of the particle
+     */
+    z;
+    /**
+     * Stores the velocity angle of the particle
+     */
+    velocityAngle;
+    /**
+     * Stores the radians per second of the particle
+     */
+    radiansPerSecond;
+    /**
+     * Stores the radius of the particle
+     */
+    radius;
+    radiusX;
+    radiusY;
+    /**
+     * Stores the starting radius of the particle
+     */
+    radiusStart;
+    /**
+     * Stores the ending radius of the particle
+     */
+    radiusEnd;
+    /**
+     * Stores the cosine of the direction of the particle
+     */
+    directionCos;
+    /**
+     * Stores the sine of the direction of the particle
+     */
+    directionSin;
+    /**
+     * Stores the rotation of the particle
+     */
+    rotation;
+    /**
+     * Stores the rotation delta of the particle
+     */
+    rotationDelta;
+    /**
+     * Stores the angle of the particle
+     */
+    angle;
+    /**
+     * Stores the sprite of the particle
+     */
+    sprite;
+    /**
+     * Stores whether the vortices are shown
+     */
+    showVortices;
+    /**
+     * Stores whether the turbulence is enabled
+     */
+    turbulence;
+    /**
+     * Stores the finishing texture of the particle
+     */
+    finishingTexture;
+    /**
+     * Stores the camera z position of the particle
+     */
+    cameraZ;
+    /**
+     * Stores the camera z position converter of the particle
+     */
+    cameraZConverter;
+    /**
+     * Stores the warp speed of the particle
+     */
+    warpSpeed;
+    /**
+     * Stores the warp base speed of the particle
+     */
+    warpBaseSpeed;
+    /**
+     * Stores the warp field of view of the particle
+     */
+    warpFov;
+    /**
+     * Stores the warp stretch of the particle
+     */
+    warpStretch;
+    skipPositionBehaviour = false;
+    skipAngularVelocityBehaviour = false;
+    skipColorBehaviour = false;
+    skipEmitDirectionBehaviour = false;
+    skipRotationBehaviour = false;
+    skipSizeBehaviour = false;
+    skipAttractionRepulsionBehaviour = false;
+    /**
+     * Stores the warp distance scale converter of the particle
+     */
+    warpDistanceScaleConverter;
+    sizeDifference;
+    fromAtoB = false;
+    fromAtoBTwoWays = false;
+    pointA = new Point();
+    pointB = new Point();
+    there = new ThereBack();
+    back = new ThereBack();
+    xStart = 0;
+    yStart = 0;
+    xTarget = 0;
+    yTarget = 0;
+    thereDuration = 1;
+    backDuration = 1;
+    progress = 0;
+    time = 0;
+    thereAmplitude = 10;
+    backAmplitude = 10;
+    direction = 1;
+    noiseOffset = new Point();
+    timeline = [];
+    initialDirectionCos = 0;
+    initialDirectionSin = 0;
+    velocityScale = 1;
+    rotationAcceleration = 0;
     /**
      * Constructs a particle object
      */
     constructor() {
-        this.next = null;
-        this.prev = null;
-        /**
-         * Stores the unique ID of the particle
-         */
-        this.uid = Particle._UID.value++;
-        /**
-         * Stores the movement of the particle
-         */
-        this.movement = new Point();
-        /**
-         * Stores the acceleration of the particle
-         */
-        this.acceleration = new Point();
-        /**
-         * Stores the velocity of the particle
-         */
-        this.velocity = new Point();
-        /**
-         * Stores the size of the particle
-         */
-        this.size = new Point();
-        /**
-         * Stores the starting size of the particle
-         */
-        this.sizeStart = new Point();
-        /**
-         * Stores the starting warp size of the particle
-         */
-        this.warpSizeStart = new Point();
-        /**
-         * Stores the ending size of the particle
-         */
-        this.sizeEnd = new Point();
-        /**
-         * Stores the x value of the particle for sin wave
-         */
-        this.sinXVal = new Point();
-        /**
-         * Stores the y value of the particle for sin wave
-         */
-        this.sinYVal = new Point();
-        /**
-         * Stores the color of the particle
-         */
-        this.color = new Color();
-        /**
-         * Stores the starting color of the particle
-         */
-        this.colorStart = new Color();
-        /**
-         * Stores the ending color of the particle
-         */
-        this.colorEnd = new Color();
-        this.superColorAlphaEnd = 1;
-        this.skipPositionBehaviour = false;
-        this.skipAngularVelocityBehaviour = false;
-        this.skipColorBehaviour = false;
-        this.skipEmitDirectionBehaviour = false;
-        this.skipRotationBehaviour = false;
-        this.skipSizeBehaviour = false;
-        this.skipAttractionRepulsionBehaviour = false;
-        this.fromAtoB = false;
-        this.fromAtoBTwoWays = false;
-        this.pointA = new Point();
-        this.pointB = new Point();
-        this.there = new ThereBack();
-        this.back = new ThereBack();
-        this.xStart = 0;
-        this.yStart = 0;
-        this.xTarget = 0;
-        this.yTarget = 0;
-        this.thereDuration = 1;
-        this.backDuration = 1;
-        this.progress = 0;
-        this.time = 0;
-        this.thereAmplitude = 10;
-        this.backAmplitude = 10;
-        this.direction = 1;
-        this.noiseOffset = new Point();
-        this.timeline = [];
-        this.initialDirectionCos = 0;
-        this.initialDirectionSin = 0;
-        this.velocityScale = 1;
-        this.rotationAcceleration = 0;
         this.reset();
     }
     /**
@@ -196,6 +308,4 @@ class Particle {
         this.sprite.visible = false;
     }
 }
-Particle._UID = { value: 0 };
-export default Particle;
 //# sourceMappingURL=Particle.js.map

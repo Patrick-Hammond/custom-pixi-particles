@@ -25,11 +25,7 @@ export default class SpawnBehaviour extends Behaviour {
      * @returns {Point[]} List of positions along the trail.
      */
     calculateTrailRangePositions: (point: any) => {
-        positions: {
-            x: any;
-            y: any;
-            z: any;
-        }[];
+        positions: any[];
         probabilities: number[];
     };
     /**

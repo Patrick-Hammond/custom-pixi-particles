@@ -8,34 +8,18 @@ import { AbstractEmission, EmissionTypes } from './index';
  * @abstract
  */
 export default class StandardEmission extends AbstractEmission {
-    constructor() {
-        super(...arguments);
-        /**
-         * The emitCounter field stores the counter for emission rate.
-         * @private
-         * @type {number}
-         */
-        this._emitCounter = 0;
-        /**
-         * The maxParticles field stores the maximum number of particles allowed to be emitted.
-         * @private
-         * @type {number}
-         */
-        this._maxParticles = 0;
-        /**
-         * The emissionRate field stores the current rate of emission.
-         * @private
-         * @type {number}
-         */
-        this._emissionRate = 0;
-        /**
-         * GetName() returns the type of the emission.
-         * @return {EmissionTypes} - The type of the emission.
-         */
-        this.getName = () => {
-            return EmissionTypes.UNIFORM;
-        };
-    }
+    /**
+     * The emitCounter field stores the counter for emission rate.
+     * @private
+     * @type {number}
+     */
+    _emitCounter = 0;
+    /**
+     * The maxParticles field stores the maximum number of particles allowed to be emitted.
+     * @private
+     * @type {number}
+     */
+    _maxParticles = 0;
     /**
      * Getter for the maxParticles field.
      * @return {number} - The maximum number of particles allowed to be emitted.
@@ -50,6 +34,12 @@ export default class StandardEmission extends AbstractEmission {
     set maxParticles(value) {
         this._maxParticles = Math.max(0, value);
     }
+    /**
+     * The emissionRate field stores the current rate of emission.
+     * @private
+     * @type {number}
+     */
+    _emissionRate = 0;
     /**
      * Getter for the emissionRate field.
      * @return {number} - The current emission rate.
@@ -83,5 +73,12 @@ export default class StandardEmission extends AbstractEmission {
         }
         return count;
     }
+    /**
+     * GetName() returns the type of the emission.
+     * @return {EmissionTypes} - The type of the emission.
+     */
+    getName = () => {
+        return EmissionTypes.UNIFORM;
+    };
 }
 //# sourceMappingURL=StandardEmission.js.map

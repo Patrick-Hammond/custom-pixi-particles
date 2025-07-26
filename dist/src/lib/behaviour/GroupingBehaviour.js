@@ -1,23 +1,20 @@
 import { Point } from '../util';
 import { Behaviour, BehaviourNames } from './index';
 export default class GroupingBehaviour extends Behaviour {
-    constructor() {
-        super(...arguments);
-        this.enabled = true;
-        this.priority = 0;
-        this.groupCenter = new Point(0, 0); // Shared center for the group
-        this.groupRadius = 100; // Radius of the group
-        this.attractionStrength = 0.1; // Strength of attraction toward the group center
-        this.repulsionStrength = 0; // Strength of repulsion between particles
-        this.orbitSpeed = 0; // Speed of orbiting (0 for no orbit)
-        this.randomness = 0.2; // Adds randomness to particle movement
-        this.boundaryEnforcement = false; // Enforce group boundary limits
-        this.dynamicRadiusSpeed = 0; // Speed for dynamic radius scaling
-        this.maxRadius = 150; // Maximum radius for dynamic scaling
-        this.minRadius = 50; // Minimum radius for dynamic scaling
-        this.clusterPoints = []; // Additional cluster points
-        this.particleAngles = new Map(); // Store unique angles for each particle
-    }
+    enabled = true;
+    priority = 0;
+    groupCenter = new Point(0, 0); // Shared center for the group
+    groupRadius = 100; // Radius of the group
+    attractionStrength = 0.1; // Strength of attraction toward the group center
+    repulsionStrength = 0; // Strength of repulsion between particles
+    orbitSpeed = 0; // Speed of orbiting (0 for no orbit)
+    randomness = 0.2; // Adds randomness to particle movement
+    boundaryEnforcement = false; // Enforce group boundary limits
+    dynamicRadiusSpeed = 0; // Speed for dynamic radius scaling
+    maxRadius = 150; // Maximum radius for dynamic scaling
+    minRadius = 50; // Minimum radius for dynamic scaling
+    clusterPoints = []; // Additional cluster points
+    particleAngles = new Map(); // Store unique angles for each particle
     init(particle) {
         if (!this.enabled)
             return;
@@ -79,7 +76,7 @@ export default class GroupingBehaviour extends Behaviour {
             const dy = point.y - particle.movement.y;
             const distance = Math.sqrt(dx * dx + dy * dy);
             if (distance > 0 && distance < this.groupRadius) {
-                const force = Math.pow((this.repulsionStrength / distance), 2);
+                const force = (this.repulsionStrength / distance) ** 2;
                 particle.movement.x -= dx * force;
                 particle.movement.y -= dy * force;
             }

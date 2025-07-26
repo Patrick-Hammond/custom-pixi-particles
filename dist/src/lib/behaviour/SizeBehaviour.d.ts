@@ -16,7 +16,7 @@ export default class SizeBehaviour extends Behaviour {
     useNoise: boolean;
     noiseScale: number;
     invertAtMidpoint: boolean;
-    sizeSteps: never[];
+    sizeSteps: any[];
     timeOffset: number;
     xScalingFunction: string;
     yScalingFunction: string;
@@ -51,7 +51,7 @@ export default class SizeBehaviour extends Behaviour {
         useNoise: boolean;
         noiseScale: number;
         invertAtMidpoint: boolean;
-        sizeSteps: never[];
+        sizeSteps: any[];
         timeOffset: number;
         xScalingFunction: string;
         yScalingFunction: string;
