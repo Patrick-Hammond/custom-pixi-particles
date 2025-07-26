@@ -1,0 +1,24 @@
+{
+  "compilerOptions": {
+    "module": "ES2022",
+    "noImplicitAny": true,
+    "target": "es2022",
+    "sourceMap": true,
+    "lib": ["es6", "es5", "dom"],
+    "strictNullChecks": true,
+    "moduleResolution": "bundler",
+    "outDir": "./dist",
+    "experimentalDecorators": true,
+    "emitDecoratorMetadata": true,
+    "noUnusedLocals": false,
+    "declaration": true,
+    "esModuleInterop": true,
+    "skipLibCheck": true
+  },
+  "include": [
+    "./src/**/*.ts",
+    "./benchmark/**/*.ts"
+  ],
+  "exclude": ["node_modules", "dist", "../../**/*"],
+  "types": ["pixi.js"]
+}
